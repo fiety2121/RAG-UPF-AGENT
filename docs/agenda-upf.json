@@ -1,0 +1,111 @@
+{
+"evenements": [
+{
+"id": "EVT001",
+"titre": "Cours SQL - L3 Informatique",
+"type": "cours",
+"date": "2026-05-12",
+"heure_debut": "08:30",
+"heure_fin": "10:30",
+"salle": "Salle Info 1",
+"enseignant": "Dr. Karim",
+"participants": "L3-INF"
+},
+{
+    "id": "EVT002",
+"titre": "Cours React Native - L3 Informatique",
+"type": "cours",
+"date": "2026-05-12",
+"heure_debut": "10:45",
+"heure_fin": "12:45",
+"salle": "Salle Info 2",
+"enseignant": "Dr. Amine",
+"participants": "L3-INF"
+},
+{
+"id": "EVT003",
+"titre": "TP Bases de donnees - M1 Informatique",
+"type": "tp",
+"date": "2026-05-13",
+"heure_debut": "14:00",
+"heure_fin": "16:00",
+"salle": "Salle Info 3",
+"enseignant": "Dr. Sara",
+"participants": "M1-INF"
+},
+{
+"id": "EVT004",
+"titre": "Soutenance PFE - Salma Benali",
+"type": "soutenance",
+"date": "2026-06-15",
+"heure_debut": "10:00",
+"heure_fin": "12:00",
+"salle": "Salle B201",
+"enseignant": "Dr. Sara, Dr. Amine, Prof. Rachid",
+"participants": "M1-INF",
+"etudiant": "Salma Benali"
+},
+{
+"id": "EVT005",
+"titre": "Soutenance PFE - Mehdi Fassi",
+"type": "soutenance",
+"date": "2026-06-16",
+"heure_debut": "14:00",
+"heure_fin": "16:00",
+"salle": "Salle A101",
+"enseignant": "Dr. Amine, Dr. Karim, Prof. Hassan",
+"participants": "M2-INF",
+"etudiant": "Mehdi Fassi"
+},
+{
+"id": "EVT006",
+"titre": "Examen S2 - Algorithmique",
+"type": "examen",
+"date": "2026-05-26",
+"heure_debut": "09:00",
+"heure_fin": "11:00",
+"salle": "Amphi A",
+"enseignant": "Dr. Karim",
+"participants": "L2-INF"
+},
+{
+"id": "EVT007",
+"titre": "Reunion pedagogique Filiere INF",
+"type": "reunion",
+"date": "2026-05-15",
+"heure_debut": "16:00",
+"heure_fin": "17:30",
+"salle": "Salle de reunion 1",
+"enseignant": "Coordination Filiere",
+"participants": "Enseignants INF"
+},
+{
+"id": "EVT008",
+"titre": "Conference IA et Education",
+"type": "evenement",
+"date": "2026-05-20",
+"heure_debut": "14:00",
+"heure_fin": "17:00",
+"salle": "Amphi B",
+"enseignant": "Invite externe",
+"participants": "Tous niveaux"
+}
+],
+"salles_disponibles": [
+"Amphi A (200 places)",
+"Amphi B (100 places)",
+"Salle A101 (40 places)",
+"Salle A102 (40 places)",
+"Salle A103 (40 places)",
+"Salle B201 (30 places, soutenances)",
+"Salle B202 (30 places, soutenances)",
+"Salle Info 1 (25 postes)",
+"Salle Info 2 (25 postes)",
+"Salle Info 3 (25 postes)"
+],
+"horaires_type": {
+"matin": ["08:30-10:30", "10:45-12:45"],
+"apres_midi": ["14:00-16:00", "16:15-18:15"],
+"pause_dejeuner": "12:45-14:00"
+}
+}

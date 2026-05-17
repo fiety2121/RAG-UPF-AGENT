@@ -1,0 +1,163 @@
+{
+  "name": "agent_planning",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "be03f75f-885e-4ed6-a1ca-62af2bb08faa",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=mode Expression : ={{ $json.message }}",
+        "options": {
+          "systemMessage": "Tu es l'agent Planning de l'UPF. Tu geres les emplois du temps, salles,\nsoutenances et calendrier academique.\nOUTILS DISPONIBLES :\n1. read_text_file(path) - Lit un fichier JSON ou texte\n - Pour l'agenda : path =\n\"C:\\Users\\rekik\\Desktop\\docs\\agenda-upf.json\"\nPROCEDURE OBLIGATOIRE :\n1. Pour CHAQUE question, lis l'agenda avec read_text_file\n2. Parse le JSON pour extraire les evenements pertinents\n3. Repond en citant les details (titre, date, heure, salle)\nSTRUCTURE DU JSON :\n{\n \"evenements\": [\n { id, titre, type, date, heure_debut, heure_fin, salle,\n enseignant, participants, etudiant }\n ],\n \"salles_disponibles\": [...]\n}\nREGLES :\n- Reponds TOUJOURS en francais\n- Sois precis sur dates, heures, salles\n- Si plusieurs evenements correspondent : liste claire\n- Si rien : dis-le explicitement\nREGLE ABSOLUE : passe TOUJOURS le parametre \"path\" avec le chemin absolu.",
+          "maxIterations": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "773d8ff0-57f5-49de-839c-cab32ae4faf3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        64,
+        208
+      ],
+      "id": "9878f635-f692-4877-8154-679725c2aa44",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "hoEDoJrV8V61qtWQ",
+          "name": "Groq account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ \n$json.sessionId || \"default-session\"\n}}",
+        "contextWindowLength": 3
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        208
+      ],
+      "id": "f13359b7-4733-4a41-9b1c-62ffe783694b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://localhost:3002/sse",
+        "serverTransport": "sse",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        208
+      ],
+      "id": "34640ebb-8ff8-4fb4-9bea-09a9b793964c",
+      "name": "MCP Client"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "je veux faire un reservation?",
+          "sessionId": "test-01"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "69c95e31-80c4-4027-ba93-3612461987d3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "11df4a05f124d70a9665afaefa5563f6b20e676eaafd8240b850f338c2a425a2"
+  },
+  "id": "Lj5pYOnOzELU9rWC",
+  "tags": []
+}

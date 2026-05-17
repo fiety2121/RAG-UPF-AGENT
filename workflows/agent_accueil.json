@@ -1,0 +1,163 @@
+{
+  "name": "agent_accueil",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        -64
+      ],
+      "id": "99410f75-0aa9-493b-96ab-ca7fd0706163",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=mode Expression : ={{ $json.message }}",
+        "options": {
+          "systemMessage": "Tu es l'assistant officiel d'accueil de l'UPF.\nPour repondre a une question, suis EXACTEMENT ces etapes :\nETAPE 1 - Lire le document approprie selon le sujet :\n- Question generale -> read_text_file avec\n  path = \"C:\\Users\\rekik\\Desktop\\docs\\faq-upf.md\"\n\n- Question sur PFE -> read_text_file avec\n  path = \"C:\\Users\\rekik\\Desktop\\docs\\guide-pfe.md\"\n\n- Question sur reglement -> read_text_file avec\n  path = \"C:\\Users\\rekik\\Desktop\\docs\\reglement.md\"\nETAPE 2 - Repondre en francais en citant le fichier source.\nREGLE ABSOLUE : tu DOIS toujours passer le parametre \"path\" avec un chemin\nabsolu complet.\nCONTACTS UTILES :\n- Scolarite : scolarite@upf.ma\n- Direction : direction@upf.ma\nSi la question n'est dans aucun document : reponds \"Pour cette information,\ncontactez scolarite@upf.ma\".",
+          "maxIterations": 3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        544,
+        -64
+      ],
+      "id": "f7926774-18cb-463a-8680-dad2e2479a48",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        400,
+        144
+      ],
+      "id": "d9a556dd-7239-4fdf-a883-ffdcefbed860",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "hoEDoJrV8V61qtWQ",
+          "name": "Groq account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ \n$json.sessionId || \"default-session\"\n}}",
+        "contextWindowLength": 3
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        544,
+        144
+      ],
+      "id": "b2269eb5-7c12-4b42-9b11-65667467b6dc",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://localhost:3002/sse",
+        "serverTransport": "sse",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        144
+      ],
+      "id": "db651ad7-1e67-4875-b6bb-22d9181e843a",
+      "name": "MCP Client"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "Quels sont les horaires d'ouverture d'upf?",
+          "sessionId": "test-02"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1759a477-c7cb-4ca9-8c72-555b860b44b6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "11df4a05f124d70a9665afaefa5563f6b20e676eaafd8240b850f338c2a425a2"
+  },
+  "id": "mZE46n9upwPQKIjU",
+  "tags": []
+}

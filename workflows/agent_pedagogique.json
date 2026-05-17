@@ -1,0 +1,163 @@
+{
+  "name": "agent_pedagogique",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "message"
+            },
+            {
+              "name": "sessionId"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a87ef02b-3f1c-4711-aefe-3eccb2233b37",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=mode Expression : ={{ $json.message }}",
+        "options": {
+          "systemMessage": "Tu es un tuteur expert de la Filiere Informatique.\nMatieres : SQL/PostgreSQL, Bases de donnees, Algorithmique.\n\nOUTILS DISPONIBLES :\n1. read_text_file(path) avec chemin absolu\n\nPROCEDURE :\n1. Lire le fichier de cours avec read_text_file :\n   path = \"C:\\Users\\rekik\\Desktop\\docs\\sql-jointures.md\"\n2. Construire la reponse a partir du contenu lu\n\nREGLE ABSOLUE : passe TOUJOURS le parametre \"path\" avec le chemin absolu complet.\n\nSTRUCTURE DE REPONSE :\n- Definition courte\n- Cas d'usage concret\n- Conseil pratique\n\nSois pedagogique et encourage les etudiants.",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "54e14409-9cfb-4ec0-96dc-0886ecd03928",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        64,
+        208
+      ],
+      "id": "65172e94-2402-482d-b416-8063cfc64862",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "hoEDoJrV8V61qtWQ",
+          "name": "Groq account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ \n$json.sessionId || \"default-session\"\n}}",
+        "contextWindowLength": 3
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        208
+      ],
+      "id": "a3afd227-1034-4f66-9895-b861fbe8d21b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://localhost:3002/sse",
+        "serverTransport": "sse",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        208
+      ],
+      "id": "5ce53dec-78aa-4642-8652-331c358f93b7",
+      "name": "MCP Client"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "message": "Donne moi une résumé du cours sql",
+          "sessionId": "test-02"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "de8afa94-d6c2-41e8-93c4-2d17a5eae3d8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "11df4a05f124d70a9665afaefa5563f6b20e676eaafd8240b850f338c2a425a2"
+  },
+  "id": "2NVLajSYcJWAOw36",
+  "tags": []
+}

@@ -1,0 +1,305 @@
+{
+  "name": "orchestrator",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -240,
+        32
+      ],
+      "id": "6c32dd4c-7d47-4ae1-b37b-938aba6292f0",
+      "name": "When chat message received",
+      "webhookId": "a61d81ad-c712-4eac-b922-803ffd2ae692"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Tu es le centre de routage de l'UPF (Smart UPF).\nTON ROLE UNIQUE : analyser la question et appeler le bon sous-agent.\nTu ne reponds JAMAIS directement. Tu delegues TOUJOURS.\nREGLES DE ROUTAGE :\n1. Cours, exercices, code, programmation, SQL, React Native, expliquer un concept\n -> agent_pedagogique\n2. Planning, emploi du temps, salle, soutenance, examen, calendrier,\n horaire de cours\n -> agent_planning\n3. Questions generales UPF (inscriptions, contacts, FAQ, reglement, frais)\n -> agent_accueil\n4. Cas par defaut -> agent_accueil\nEXEMPLES DE ROUTAGE :\n- \"Explique-moi les LEFT JOIN\" -> agent_pedagogique\n- \"Quand est ma soutenance ?\" -> agent_planning\n- \"Salle Info 1 est-elle libre demain ?\" -> agent_planning\n- \"Quels sont les horaires d'ouverture de l'UPF ?\" -> agent_accueil\n- \"Comment m'inscrire en M1 ?\" -> agent_accueil\n- \"Quel est l'emploi du temps des L3 INF ?\" -> agent_planning\n- \"Genere-moi un exercice SQL\" -> agent_pedagogique\nTransmets fidelement la reponse du sous-agent. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "aa749924-3878-46d9-9f10-370aa57066bf",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {
+          "maxTokensToSample": 500
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        240
+      ],
+      "id": "6ff89aec-b930-4fbe-8c0f-0419199b29a6",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "hoEDoJrV8V61qtWQ",
+          "name": "Groq account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        240
+      ],
+      "id": "c2449342-303c-4d56-9d75-d7b03b21bb57",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Repond aux questions generales sur l'UPF : inscriptions, horaires, procedures, contacts, reglement interieur, calendrier academique",
+        "workflowId": {
+          "__rl": true,
+          "value": "mZE46n9upwPQKIjU",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/mZE46n9upwPQKIjU",
+          "cachedResultName": "agent_accueil"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $('When chat message received').item.json.chatInput }}",
+            "sessionId": "={{ $('When chat message received').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        64
+      ],
+      "id": "00738192-9da6-4780-9980-c24d49d945a2",
+      "name": "Call 'agent_accueil'"
+    },
+    {
+      "parameters": {
+        "description": "Repond aux questions generales sur l'UPF : inscriptions, horaires, procedures, contacts, reglement interieur, calendrier academique",
+        "workflowId": {
+          "__rl": true,
+          "value": "2NVLajSYcJWAOw36",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/2NVLajSYcJWAOw36",
+          "cachedResultName": "agent_pedagogique"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "sessionId": "={{ $('When chat message received').item.json.sessionId }}",
+            "message": "={{ $('When chat message received').item.json.chatInput }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        208
+      ],
+      "id": "4447d3d5-0986-4f94-b47e-29854b229003",
+      "name": "Call 'agent_pedagogique'"
+    },
+    {
+      "parameters": {
+        "description": "Repond aux questions generales sur l'UPF : inscriptions, horaires, procedures, contacts, reglement interieur, calendrier academique",
+        "workflowId": {
+          "__rl": true,
+          "value": "Lj5pYOnOzELU9rWC",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/Lj5pYOnOzELU9rWC",
+          "cachedResultName": "agent_planning"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $('When chat message received').item.json.chatInput }}",
+            "sessionId": "={{ $('When chat message received').item.json.sessionId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "sessionId",
+              "displayName": "sessionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        368
+      ],
+      "id": "e8dbea4d-c824-44f9-8759-092579da9671",
+      "name": "Call 'agent_planning'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'agent_accueil'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'agent_pedagogique'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'agent_planning'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "39104698-5f4d-4658-9d43-122f48cc88e8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "11df4a05f124d70a9665afaefa5563f6b20e676eaafd8240b850f338c2a425a2"
+  },
+  "id": "tRZuMmP3vnCWUvfF",
+  "tags": []
+}
