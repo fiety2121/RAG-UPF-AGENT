@@ -25,21 +25,26 @@ Il illustre concrètement les concepts suivants :
 ## 🏗️ Architecture
 
 ```
-Utilisateur (Chat Web)
+User (Web Chat)
         │
         ▼
-┌─────────────────────┐
-│   ORCHESTRATEUR     │  ← Agent de triage (Groq llama-3.1-8b-instant)
-│   Analyse l'intention│    Route vers le bon sous-agent
-└──────┬──────┬───────┘
-       │      │      │
-       ▼      ▼      ▼
-┌─────────┐ ┌──────────┐ ┌──────────┐
-│ Agent   │ │ Agent    │ │ Agent    │
-│ Accueil │ │Pédagogique│ │Planning  │
-└────┬────┘ └────┬─────┘ └────┬─────┘
-     │           │             │
-     └───────────┴─────────────┘
+┌────────────────────────────┐
+│        ORCHESTRATOR        │
+│  Intent Detection + Routing│
+│   Groq llama-3.1-8b        │
+└──────────┬─────────────────┘
+           │
+ ┌─────────┼──────────┐
+ ▼         ▼          ▼
+Agent   Agent      Agent
+Accueil Pédagogique Planning
+ │         │            │
+ │         │            ▼
+ │         │     Google Calendar
+ │         │     Session Booking
+ │         │     Classroom Reserve
+ │         │
+ └─────────┴─────>
                  │
                  ▼
      ┌───────────────────────┐
@@ -64,6 +69,7 @@ Utilisateur (Chat Web)
 | `agent_accueil` | FAQ, inscriptions, contacts, règlement | `llama-3.3-70b-versatile` | `read_text_file` |
 | `agent_pedagogique` | Cours SQL, algorithmique, exercices | `llama-3.3-70b-versatile` | `read_text_file` |
 | `agent_planning` | Emplois du temps, salles, soutenances | `llama-3.3-70b-versatile` | `read_text_file` |
+| `agent_planning` | Create my SQL revision session Friday 4PM | `llama-3.3-70b-versatile` | - |
 
 ### Règles de routage (Orchestrateur)
 
@@ -74,6 +80,7 @@ Utilisateur (Chat Web)
 | "Quel est l'emploi du temps des L3 INF ?" | `agent_planning` |
 | "Quels sont les horaires d'ouverture ?" | `agent_accueil` |
 | "Comment m'inscrire en M1 ?" | `agent_accueil` |
+| "Create my SQL revision session Friday 4PM" | `agent_accueil` |
 
 ---
 
@@ -83,6 +90,9 @@ Utilisateur (Chat Web)
 - [n8n](https://n8n.io/) (Community Edition)
 - Compte [Groq](https://console.groq.com/) (gratuit)
 - Connexion internet pour l'API Groq
+- Google Account
+- Google Calendar credentials
+
 
 ---
 
@@ -127,6 +137,33 @@ Placer les fichiers suivants dans ce dossier :
 4. Lier ce credential aux nœuds `Groq Chat Model` de chaque workflow
 
 ---
+📅 Configure Google Calendar
+Step 1 — Create Google Cloud Project
+
+- Go to:
+https://console.cloud.google.com/
+
+Create: New project
+- Enable Google Calendar API
+
+Step 2 — OAuth Credentials
+
+Create:
+
+OAuth Client ID
+Web Application
+
+Authorized Redirect URI:
+
+- http://localhost:5678/rest/oauth2-credential/callback
+Step 3 — Add Credentials in n8n
+
+Inside n8n:
+
+Credentials
+New Credential
+Google Calendar OAuth2 API
+Connect Google account
 
 ## ▶️ Lancer le système
 
@@ -160,7 +197,7 @@ http://localhost:5678/webhook/{WEBHOOK_ID}/chat
 
 Ou via l'URL ngrok publique partagée par votre instance.
 
-### Exemples de questions
+### Exemples de prompts
 
 ```
 Quels sont les horaires d'ouverture de l'UPF ?
@@ -169,6 +206,10 @@ Quel est l'emploi du temps des L3 INF ?
 Quand est la soutenance de Salma Benali ?
 Comment s'inscrire en M1 ?
 Génère-moi un exercice SQL sur les jointures
+Schedule AI revision session tomorrow at 4PM
+Reserve classroom B12 Friday morning
+Create calendar events for all soutenances
+Book a meeting with my supervisor
 ```
 
 ---
@@ -200,6 +241,7 @@ smart-upf/
 
 ### Agent Pédagogique — Exercice SQL généré
 ![Agent Pédagogique](screenshots/agent_pedagogique.png)
+
 ---
 
 ## 🔧 Dépannage
@@ -211,6 +253,7 @@ smart-upf/
 | Réponse vide ou fallback | Chemin MCP incorrect | Vérifier les paths dans les system prompts |
 | `Rate limit` / `Bad model` | Mauvais nom de modèle Groq | Utiliser `llama-3.3-70b-versatile` |
 | `MCP connection failed` | Serveur MCP non démarré | Lancer le Terminal 2 |
+|Google Calendar auth failed|OAuth misconfigured|Reconnect credentials|
 
 ---
 
@@ -225,7 +268,20 @@ smart-upf/
 | Proxy MCP→SSE | `mcp-proxy` |
 | Tunnel public | [ngrok](https://ngrok.com/) |
 | Mémoire | n8n Window Buffer Memory |
+|Google Calendar auth creadentials |[Reconnect credentials](https://console.cloud.google.com/)|
 
+---
+Future Improvements
+
+Planned features:
+
+-📧 Email notifications
+-📱 WhatsApp integration
+-🏫 Real classroom availability system
+-🧠 Vector database integration
+-🔊 Voice assistant
+-📊 Analytics dashboard
+-🎯 Student personalization
 ---
 
 ## 👨‍💻 Auteur
