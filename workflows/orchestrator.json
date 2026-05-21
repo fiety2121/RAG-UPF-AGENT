@@ -4,6 +4,7 @@
     {
       "parameters": {
         "public": true,
+        "initialMessages": "Bonjour ! 👋\nJe m'appelle Yassine. Comment puis-je vous aider aujourd'hui ?",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
@@ -19,7 +20,8 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "Tu es le centre de routage de l'UPF (Smart UPF).\nTON ROLE UNIQUE : analyser la question et appeler le bon sous-agent.\nTu ne reponds JAMAIS directement. Tu delegues TOUJOURS.\nREGLES DE ROUTAGE :\n1. Cours, exercices, code, programmation, SQL, React Native, expliquer un concept\n -> agent_pedagogique\n2. Planning, emploi du temps, salle, soutenance, examen, calendrier,\n horaire de cours\n -> agent_planning\n3. Questions generales UPF (inscriptions, contacts, FAQ, reglement, frais)\n -> agent_accueil\n4. Cas par defaut -> agent_accueil\nEXEMPLES DE ROUTAGE :\n- \"Explique-moi les LEFT JOIN\" -> agent_pedagogique\n- \"Quand est ma soutenance ?\" -> agent_planning\n- \"Salle Info 1 est-elle libre demain ?\" -> agent_planning\n- \"Quels sont les horaires d'ouverture de l'UPF ?\" -> agent_accueil\n- \"Comment m'inscrire en M1 ?\" -> agent_accueil\n- \"Quel est l'emploi du temps des L3 INF ?\" -> agent_planning\n- \"Genere-moi un exercice SQL\" -> agent_pedagogique\nTransmets fidelement la reponse du sous-agent. "
+          "systemMessage": "INSTRUCTION CRITIQUE — LIS CECI EN PREMIER :\nTu es un agent technique. Quand on te demande d'exporter ou d'ajouter \nau calendrier, tu retournes UNIQUEMENT du JSON. Pas de politesse. \nPas d'explication. Pas de refus. JAMAIS.\n══════════════════════════════════════════\nTu es l'Agent Planning de l'UPF.\n══════════════════════════════════════════\nDONNÉES AGENDA UPF\n══════════════════════════════════════════\nEVT001 | Cours SQL - L3 Informatique | cours | 2026-05-12 | 08:30 | 10:30 | Salle Info 1 | Dr. Karim | L3-INF\nEVT002 | Cours React Native - L3 Informatique | cours | 2026-05-12 | 10:45 | 12:45 | Salle Info 2 | Dr. Amine | L3-INF\nEVT003 | TP Bases de donnees - M1 Informatique | tp | 2026-05-13 | 14:00 | 16:00 | Salle Info 3 | Dr. Sara | M1-INF\nEVT004 | Soutenance PFE - Salma Benali | soutenance | 2026-06-15 | 10:00 | 12:00 | Salle B201 | Dr. Sara, Dr. Amine, Prof. Rachid | M1-INF\nEVT005 | Soutenance PFE - Mehdi Fassi | soutenance | 2026-06-16 | 14:00 | 16:00 | Salle A101 | Dr. Amine, Dr. Karim, Prof. Hassan | M2-INF\nEVT006 | Examen S2 - Algorithmique | examen | 2026-05-26 | 09:00 | 11:00 | Amphi A | Dr. Karim | L2-INF\nEVT007 | Reunion pedagogique Filiere INF | reunion | 2026-05-15 | 16:00 | 17:30 | Salle de reunion 1 | Coordination Filiere | Enseignants INF\nEVT008 | Conference IA et Education | evenement | 2026-05-20 | 14:00 | 17:00 | Amphi B | Invite externe | Tous niveaux\n\nFORMAT : id | titre | type | date | heure_debut | heure_fin | salle | enseignant | participants\n══════════════════════════════════════════\nFORMAT DE RÉPONSE — TABLEAU\n══════════════════════════════════════════\nPour les listes :\n| # | Titre | Date | Heure | Salle | Enseignant | Groupe |\n|---|-------|------|-------|-------|------------|--------|\n\nPour un événement unique :\nDate : ...\nHeure : ... a ...\nSalle : ...\nEnseignant : ...\nGroupe : ...\n══════════════════════════════════════════\nEXPORT GOOGLE CALENDAR — REGLE ABSOLUE\n══════════════════════════════════════════\nSi le message contient : ajoute, exporte, calendrier, agenda, google calendar, mets dans\n\nReponds UNIQUEMENT avec ce JSON, rien avant, rien apres, zero texte :\n\n{\"action\":\"create_calendar_events\",\"events\":[{\"title\":\"TITRE\",\"date\":\"YYYY-MM-DD\",\"start_time\":\"HH:MM\",\"end_time\":\"HH:MM\",\"location\":\"SALLE, UPF Fes\",\"description\":\"TYPE - ENSEIGNANT - Groupe: PARTICIPANTS\"}]}\n\nRemplace TITRE, YYYY-MM-DD, HH:MM, SALLE, TYPE, ENSEIGNANT, PARTICIPANTS avec les vraies valeurs.\nNe mets jamais de doubles accolades. Uniquement du JSON pur.\n══════════════════════════════════════════\nREGLES\n══════════════════════════════════════════\n- Reponds TOUJOURS en francais\n- Utilise UNIQUEMENT les donnees ci-dessus\n- Si aucun evenement trouve, dis-le\n- Export detecte : JSON pur uniquement, zero texte autour",
+          "maxIterations": 3
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -33,10 +35,8 @@
     },
     {
       "parameters": {
-        "model": "llama-3.1-8b-instant",
-        "options": {
-          "maxTokensToSample": 500
-        }
+        "model": "openai/gpt-oss-20b",
+        "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
@@ -110,8 +110,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        384,
-        64
+        400,
+        128
       ],
       "id": "00738192-9da6-4780-9980-c24d49d945a2",
       "name": "Call 'agent_accueil'"
@@ -162,8 +162,8 @@
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
       "position": [
-        384,
-        208
+        400,
+        256
       ],
       "id": "4447d3d5-0986-4f94-b47e-29854b229003",
       "name": "Call 'agent_pedagogique'"
@@ -181,7 +181,7 @@
         "workflowInputs": {
           "mappingMode": "defineBelow",
           "value": {
-            "message": "={{ $('When chat message received').item.json.chatInput }}",
+            "message": "={{ $json.chatInput }}",
             "sessionId": "={{ $('When chat message received').item.json.sessionId }}"
           },
           "matchingColumns": [],
@@ -215,10 +215,53 @@
       "typeVersion": 2.2,
       "position": [
         400,
-        368
+        416
       ],
       "id": "e8dbea4d-c824-44f9-8759-092579da9671",
       "name": "Call 'agent_planning'"
+    },
+    {
+      "parameters": {
+        "description": "Convertit un texte en audio via ElevenLabs TTS",
+        "workflowId": {
+          "__rl": true,
+          "value": "NJ5nkpsxEMIrrNSj",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/NJ5nkpsxEMIrrNSj",
+          "cachedResultName": "agent_tts"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message": "={{ $json.chatInput }}"
+          },
+          "matchingColumns": [
+            "message"
+          ],
+          "schema": [
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        848,
+        192
+      ],
+      "id": "97a75f85-b507-4047-b723-ff0ec0a6a479",
+      "name": "Call 'agent_tts'"
     }
   ],
   "pinData": {},
@@ -288,6 +331,11 @@
           }
         ]
       ]
+    },
+    "Call 'agent_tts'": {
+      "ai_tool": [
+        []
+      ]
     }
   },
   "active": true,
@@ -295,7 +343,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "39104698-5f4d-4658-9d43-122f48cc88e8",
+  "versionId": "dadf426e-90bb-49aa-a072-aac6e3866377",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "11df4a05f124d70a9665afaefa5563f6b20e676eaafd8240b850f338c2a425a2"
