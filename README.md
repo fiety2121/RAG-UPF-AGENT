@@ -1,4 +1,4 @@
-# 🎓 Smart UPF — Système Multi-Agents IA
+# 🎓 Smart UPF — Système Multi-Agents IA 
 
 > Assistant intelligent pour l'Université Privée de Fès, construit avec **n8n**, **Groq LLM** et **Model Context Protocol (MCP)**.
 
