@@ -206,10 +206,6 @@ Quel est l'emploi du temps des L3 INF ?
 Quand est la soutenance de Salma Benali ?
 Comment s'inscrire en M1 ?
 Génère-moi un exercice SQL sur les jointures
-Schedule AI revision session tomorrow at 4PM
-Reserve classroom B12 Friday morning
-Create calendar events for all soutenances
-Book a meeting with my supervisor
 ```
 ### tous les prompts de google agenda possible
 Cours (EVT001, EVT002):
