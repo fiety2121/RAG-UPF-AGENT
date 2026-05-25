@@ -211,6 +211,66 @@ Reserve classroom B12 Friday morning
 Create calendar events for all soutenances
 Book a meeting with my supervisor
 ```
+### tous les prompts de google agenda possible
+```
+Cours (EVT001, EVT002):
+```
+```
+Ajoute au calendrier le cours SQL du 12 mai
+Exporte le cours React Native du 12 mai
+Mets dans mon agenda les cours du 12 mai
+Ajoute tous les cours au calendrier
+```
+```
+TP (EVT003): 
+```
+```
+Ajoute au calendrier le TP bases de données du 13 mai
+Exporte le TP du 13 mai dans mon agenda
+Mets le TP M1 dans mon calendrier
+```
+```
+Soutenances (EVT004, EVT005)
+```
+```
+Ajoute au calendrier la soutenance de Salma Benali
+Exporte la soutenance de Mehdi Fassi
+Mets dans mon agenda toutes les soutenances
+Ajoute les soutenances PFE au calendrier
+```
+```
+Examen (EVT006)
+```
+```
+Ajoute au calendrier l'examen d'algorithmique
+Exporte l'examen du 26 mai dans mon agenda
+Mets l'examen S2 dans mon calendrier
+```
+```
+Réunion (EVT007)
+```
+```
+Ajoute au calendrier la réunion pédagogique du 15 mai
+Exporte la réunion filière INF
+Mets la réunion dans mon agenda
+```
+```
+Conférence (EVT008)
+```
+```
+Ajoute au calendrier la conférence IA
+Exporte la conférence du 20 mai
+Mets la conférence IA et Education dans mon agenda
+```
+```
+Tout exporter
+```
+```
+Ajoute tous les événements au calendrier
+Exporte tout l'agenda UPF dans Google Calendar
+Mets tous les événements dans mon agenda
+```
+```
 
 ---
 
